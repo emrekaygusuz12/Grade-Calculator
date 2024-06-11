@@ -1,31 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <body>
-        <h1>Welcome to grade calculator!</h1>
-    </body>
-   
-    <p>Number of modules</p>
-            <select name="Modules"> 
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-            </select><br>
-
-            <p>Ucas Points<label for="grade"></label></p>
-
+    <meta charset="UTF-8">
+    <title>Grade Calculator</title>
+    <script>
+        // Function to dynamically generate assignment inputs
+        function generateAssignments() {
+            let numAssignments = document.getElementById("numAssignments").value;
+            let assignmentsContainer = document.getElementById("assignmentsContainer");
+            let assignmentHeader = document.getElementById("assignmentHeader");
+            let assignmentCalculate = document.getElementById("assignmentCalculate");
             
+            // Clear previous assignments
+            assignmentsContainer.innerHTML = '';
+            
+            if (numAssignments >= 1) {
+                assignmentHeader.style.display = 'block';
+                for (let i = 1; i <= numAssignments; i++) {
+                    let assignmentRow = document.createElement('div');
+                    assignmentRow.id = `assignmentRow${i}`;
+                    assignmentRow.innerHTML = `
+                        <p>
+                            Assignment ${i}: 
+                            <input type="number" name="score${i}" id="score${i}" min="0" max="255"> / 
+                            <input type="number" name="total${i}" id="total${i}" min="0" max="255"> | 
+                            <input type="number" name="grade${i}" id="grade${i}" min="0" max="100" step="0.01"> | 
+                            <input type="number" name="weight${i}" id="weight${i}" min="0" max="100" step="0.01">
+                        </p>`;
+                    assignmentsContainer.appendChild(assignmentRow);
+                }
+            } else {
+                assignmentHeader.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to Grade Calculator!</h1>
+    <p>
+        Please select the number of assignments: 
+        <select id="numAssignments" name="assignments" onchange="generateAssignments()"> 
+            @for ($i = 0; $i <= 10; $i++)
+                <option value="{{ $i }}">{{ $i }}</option>
+            @endfor
+        </select>
+    </p><br>
 
+    <div id="assignmentHeader" style="display: none;">
+        @php
+            echo str_repeat('&nbsp;', 25); echo "Your Score / Total Score"; echo str_repeat('&nbsp;', 6); echo "Grade (%)"; echo str_repeat('&nbsp;', 9); echo "Weight (%)";
+        @endphp
+    </div>
+
+    <div id="assignmentCalculate" style="display: none;">
+        <p><input type="submit" value= "Submit"> </p>
+    </div>
+    
+    <div id="assignmentsContainer">
+        <!-- Assignment inputs will be generated here -->
+    </div>
+</body>
 </html>
