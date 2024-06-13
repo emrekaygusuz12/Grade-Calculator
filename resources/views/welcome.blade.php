@@ -20,13 +20,16 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
             width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         h1 {
             font-size: 1.5em;
             margin-bottom: 20px;
         }
         select {
-            width: 7%;
+            width: 12%;
             padding: 5px;
             margin: 10px 0;
             border: 1px solid #ccc;
@@ -34,15 +37,16 @@
             box-sizing: border-box;
         }
         input[type="number"], input[type="text"] {
-            width: 15%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+            text-align: center;
+            width: 140px;
         }
         input[type="button"] {
-            width: 15%;
+            width: 25%;
             padding: 5px;
             margin: 10px 0;
             border: 1px solid #ccc;
@@ -56,57 +60,72 @@
         }
         .assignment-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             margin-bottom: 10px;
+            width: 400px;
         }
         .assignment-row > * {
-            flex: 1;
             margin: 0 5px;
         }
         .assignment-row input[type="number"], .assignment-row input[type="checkbox"] {
-            width: 80px;
+            width: 50px;
+            text-align: center;
         }
         .assignment-row input[type="number"]:not([type="text"]) {
-            width: 60px;
+            width: 80px;
+            text-align: center;
+        }
+        .separator {
+            margin: 0 10px;
         }
 
+        /* Hide the up and down arrows for number inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
     </style>
     <script>
-        // Function to dynamically generate assignment inputs
         function generateAssignments() {
             let numAssignments = document.getElementById("numAssignments").value;
             let assignmentsContainer = document.getElementById("assignmentsContainer");
             let assignmentHeader = document.getElementById("assignmentHeader");
             let assignmentCalculate = document.getElementById("assignmentCalculate");
             
-            // Clear previous assignments
             assignmentsContainer.innerHTML = '';
+            document.getElementById("finalGrade").value = '';
+            document.getElementById("finalGradeText").textContent = '';
             
             if (numAssignments >= 1) {
                 assignmentHeader.style.display = 'block';
-                assignmentCalculate.style.display = 'block'; // Show submit button
+                assignmentCalculate.style.display = 'block';
                 for (let i = 1; i <= numAssignments; i++) {
                     let assignmentRow = document.createElement('div');
                     assignmentRow.id = `assignmentRow${i}`;
                     assignmentRow.classList.add('assignment-row');
                     assignmentRow.innerHTML = `
-                        <p>Assignment ${i}:</p>
-                        <input type="number" name="score${i}" id="score${i}" min="0" max="100" oninput="calculateGrade(${i})" placeholder="Score"> /
-                        
-                        <input type="number" name="total${i}" id="total${i}" min="0" max="100" oninput="calculateGrade(${i})" placeholder="Out of"> |
-                        <input type="number" name="grade${i}" id="grade${i}" min="0" max="100" step="0.01" oninput="manualGradeInput(${i})" placeholder="Grade"> |
+                        <p>Assignment${i}:</p>
+                        <input type="number" name="score${i}" id="score${i}" min="0" max="100" oninput="calculateGrade(${i})" placeholder="Score">
+                        <span class="separator">/</span>
+                        <input type="number" name="total${i}" id="total${i}" min="0" max="100" oninput="calculateGrade(${i})" placeholder="Out of">
+                        <span class="separator">|</span>
+                        <input type="number" name="grade${i}" id="grade${i}" min="0" max="100" step="0.01" oninput="manualGradeInput(${i})" placeholder="Grade">
+                        <span class="separator">|</span>
                         <input type="number" name="weight${i}" id="weight${i}" min="0" max="100" step="0.01" placeholder="Weight">
                     `;
                     assignmentsContainer.appendChild(assignmentRow);
                 }
             } else {
                 assignmentHeader.style.display = 'none';
-                assignmentCalculate.style.display = 'none'; // Hide submit button
+                assignmentCalculate.style.display = 'none';
             }
         }
 
-        // Function to calculate grade percentage
         function calculateGrade(assignmentNumber) {
             let score = document.getElementById(`score${assignmentNumber}`).value;
             let total = document.getElementById(`total${assignmentNumber}`).value;
@@ -120,7 +139,6 @@
             }
         }
 
-        // Function to handle manual grade input
         function manualGradeInput(assignmentNumber) {
             let grade = document.getElementById(`grade${assignmentNumber}`);
             
@@ -129,7 +147,6 @@
             }
         }
 
-        // Function to calculate the final grade
         function calculateFinalGrade() {
             let numAssignments = document.getElementById("numAssignments").value;
             let totalWeight = 0;
@@ -146,11 +163,27 @@
             }
 
             let finalGradeBox = document.getElementById("finalGrade");
+            let finalGradeText = document.getElementById("finalGradeText");
             if (totalWeight > 0) {
                 let finalGrade = weightedGradeSum / totalWeight;
                 finalGradeBox.value = `${finalGrade.toFixed(2)}%`;
+                
+                let gradeText = "";
+                if (finalGrade >= 70) {
+                    gradeText = "1st";
+                } else if (finalGrade >= 60) {
+                    gradeText = "2:1";
+                } else if (finalGrade >= 50) {
+                    gradeText = "2:2";
+                } else if (finalGrade >= 40) {
+                    gradeText = "3rd";
+                } else {
+                    gradeText = "Fail";
+                }
+                finalGradeText.textContent = gradeText;
             } else {
                 finalGradeBox.value = "Invalid weights";
+                finalGradeText.textContent = "";
             }
         }
     </script>
@@ -171,12 +204,12 @@
         </div>
 
         <div id="assignmentsContainer">
-            <!-- Assignment inputs will be generated here -->
         </div>
 
         <div id="assignmentCalculate" style="display: none;">
             <p><input type="button" value="Calculate" onclick="calculateFinalGrade()"></p>
             <p>Your final grade: <input type="text" id="finalGrade" readonly></p>
+            <p>Grade classification: <span id="finalGradeText"></span></p>
         </div>
     </div>
 </body>
